@@ -133,7 +133,7 @@ async function getFavouriteListPokemonInfo(userId, callback) {
     let userData = await store.getById(userId)
 
     if (userData.favouritePokemon.length == 0) {
-        callback({ error: 'There is no pokemon in your favourites list', status: 204 })
+        callback({ error: 'There is no pokemon in your favourites list', status: 404 })
     } else {
         let pokemonData = []
         for (let i = 0; i < userData.favouritePokemon.length; i++) {
@@ -146,6 +146,64 @@ async function getFavouriteListPokemonInfo(userId, callback) {
 }
 
 
+async function deletePokemonFromFavouriteList(userId, pokemon, callback) {
+    let userData = await store.getById(userId)
+
+    if (userData.favouritePokemon.some(e => e.name == pokemon)) {
+        let pokemonIndex = userData.favouritePokemon.findIndex(e => e.name == pokemon);
+
+        userData.favouritePokemon.splice(pokemonIndex, 1)
+        store.updateOne(userId, userData)
+
+        callback({ success: true })
+    } else {
+        callback({ error: `${pokemon} is not into your favourites list`, status: 404 })
+    }
+}
+
+async function assignPet(userId, petInfo, callback) {
+    if (petInfo.hasOwnProperty('pokemon') && petInfo.hasOwnProperty('customName')) {
+        let userData = await store.getById(userId)
+        let newPet = {
+            pokemon: petInfo.pokemon,
+            customName: petInfo.customName
+        }
+
+        userData['pet'] = newPet
+        callback(await store.updateOne(userId, userData))
+    } else {
+        callback({ error: 'Bad request', status: 400 })
+    }
+}
+
+async function updatePet(userId, petInfo, callback) {
+    let userData = await store.getById(userId)
+
+    if (userData.pet) {
+
+        if (petInfo.hasOwnProperty('pokemon') && petInfo.hasOwnProperty('customName')) {
+            let newPet = { pokemon: petInfo.pokemon, customName: petInfo.customName }
+
+            userData.pet = newPet
+            store.updateOne(userId, userData)
+            callback({ success: true })
+
+        } else if (petInfo.hasOwnProperty('customName') && !petInfo.hasOwnProperty('pokemon')) {
+            userData.pet.customName = petInfo.customName
+            store.updateOne(userId, userData)
+            callback({ success: true })
+        } else {
+            callback({ error: 'Bad request', status: 400 })
+        }
+    } else {
+        callback({ error: 'You dont have a pet', status: 404 })
+    }
+
+}
+
+async function getPersonalInfo(userId, callback) {
+    callback(await store.getById(userId))
+}
 
 module.exports = {
     register,
@@ -155,4 +213,8 @@ module.exports = {
     updatePassword,
     addFavouritePokemon,
     getFavouriteListPokemonInfo,
+    deletePokemonFromFavouriteList,
+    assignPet,
+    updatePet,
+    getPersonalInfo
 }

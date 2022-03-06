@@ -45,4 +45,28 @@ router.get('/favouritesListData', safeRoutes, (req, res) => {
         obj.error ? response.error(req, res, obj.error, obj.status) : response.success(req, res, 'Ok', obj)
     })
 })
+
+router.post('/deleteFromFavouritesList/', safeRoutes, (req, res) => {
+    controller.deletePokemonFromFavouriteList(req.decoded.id, req.body.pokemon, function(obj) {
+        obj.error ? response.error(req, res, obj.error, obj.status) : response.success(req, res, 'Ok', obj)
+    })
+})
+
+router.post('/assignPet', safeRoutes, (req, res) => {
+    controller.assignPet(req.decoded.id, req.body, function(obj) {
+        obj.error ? response.error(req, res, obj.error, obj.status) : response.success(req, res, 'Ok', obj)
+    })
+})
+
+router.post('/updatePet', safeRoutes, (req, res) => {
+    controller.updatePet(req.decoded.id, req.body, function(obj) {
+        obj.error ? response.error(req, res, obj.error, obj.status) : response.success(req, res, 'Ok', obj)
+    })
+})
+
+router.get('/getPersonalInfo', safeRoutes, (req, res) => {
+    controller.getPersonalInfo(req.decoded.id, function(obj) {
+        obj.error ? response.error(req, res, obj.error, obj.status) : response.success(req, res, 'Ok', obj)
+    })
+})
 module.exports = router
