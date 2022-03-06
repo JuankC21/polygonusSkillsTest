@@ -29,7 +29,7 @@ router.post('/forgotPassword', (req, res) => {
 })
 
 router.post('/updatePassword', safeRoutes, (req, res) => {
-    controller.updatePassword(req.decoded.id, req.body.newPassword, function(obj) {
+    controller.updatePassword(req.body.id, req.body.newPassword, function(obj) {
         obj.error ? response.error(req, res, obj.error, obj.status) : response.success(req, res, 'Ok', obj)
     })
 })
